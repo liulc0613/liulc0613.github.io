@@ -18,7 +18,7 @@
 <meta property="og:description" content="不积跬步，无以至千里  &amp;ensp;&amp;ensp;&amp;ensp;&amp;ensp;和其他数据库相比，MySQL有点与众不同，它的架构可以在多种不同场景中应用并发挥好的作用，但同时会带来一定选择上的困难。">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-09-28T12:06:53.000Z">
-<meta property="article:modified_time" content="2020-10-13T13:09:46.149Z">
+<meta property="article:modified_time" content="2020-10-13T13:27:56.180Z">
 <meta property="article:author" content="llc">
 <meta property="article:tag" content="MySQL">
 <meta name="twitter:card" content="summary">
@@ -265,7 +265,7 @@
 </li>
 <li><a href="#7">参考资料</a></li>
 </ul>
-<h2  id="1">1、MySQL逻辑架构</h2>
+<h2 id="1">1、MySQL逻辑架构</h2>
 
 <p>&ensp;&ensp;&ensp;&ensp;最上层的服务并不是MySQL独有的，大多数基于网络的客户端/服务端的工具或者服务都有类似的架构。比如连接处理、授权认证、安全等等。</p>
 <p>&emsp;&emsp;第二层架构是MySQL是大多数核心服务功能，包括查询解析、分析、优化、以及所有的内置函数，所有跨存储引擎的功能都在这一层实现：存储过程、触发器、视图等。</p>
@@ -287,12 +287,12 @@
 
 <p>&emsp;&emsp;每种MySQL存储引擎都可以实现自己的锁策略和锁粒度。在存储引擎中，锁管理是一个非常重要的决定。将锁粒度固定的某个级别，可以为某些特定场景提供更好的性能，但同时却会失去对另一场景的良好支持，好在MySQL支持多个存储引擎的架构，下面将介绍两种最重要的所策略。</p>
 <ol>
-<li><font face="黑体" ><strong>表锁（table lock）</strong></font><ul>
+<li><font face="黑体"><strong>表锁（table lock）</strong></font><ul>
 <li>表锁是MySQL中最基本的锁策略，并且是开销最小的策略。它会锁定整张表。一个用户对表进行写操作前（插入，删除，更新等），需要先获得写锁，这会阻塞其他用户对表进行读写操作。只有在没有写锁时，其他用户才能获得读锁。读锁之间是互不阻塞的。</li>
 <li>写锁也比读锁有更高的优先级，写锁请求可能会被插到读锁前面，而反之则不可。尽管存储引擎可以管理自己的锁，MySQL本身还是会使用各种有效的表锁来实现不同的目标。例如：服务器会为诸如alter table 之类的语句使用表锁，而忽略存储引擎的表机制。</li>
 </ul>
 </li>
-<li><font face="黑体" ><strong>行级锁（row lock）</strong>&gt;</font><ul>
+<li><font face="黑体"><strong>行级锁（row lock）</strong>&gt;</font><ul>
 <li>行级锁最大程度上支持并发操作（也带来了最大的锁开销），在innodb和xtradb，以及其他一些存储引擎中使用了行级锁。行级锁只在存储引擎中实现，为没有在MySQL服务层中实现。</li>
 </ul>
 </li>
@@ -301,10 +301,10 @@
 
 <p>&emsp;&emsp;事务就是一组原子性的SQL查询，或者说一个独立的工作单元。如果数据库引擎能够成功的对数据库应用改组查询的全部语法，那么就执行该组查询。如果其中有一条语句因为崩溃或者其他原因无法执行，那么所有语句都不会执行。换句话说就是，事务内的语句要么全部执行成功，要么全部执行失败。<br>&emsp;&emsp;一个良好的事务处理系统必须具备ACID这些标准特性。ACID表示原子性（atomicity）、一致性（consistency）、隔离性（isolation）和持久性（durability）。</p>
 <ul>
-<li><font face="黑体" ><strong>原子性（atomicity）</strong></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一个事物必须视作一个不可分割的工作单元，整个事务中的所有操作要么全部提交成功要么全部失败回滚。</span><br></pre></td></tr></table></figure></li>
-<li><font face="黑体" ><strong>一致性（consistency）</strong></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">数据库总是从一个一致性状态转换到另一个一致性状态。中途语句执行失败，因为事务最终没有提交，所以事务中所作的修改也不会修改并保存到数据库中，确保了数据的一致性。</span><br></pre></td></tr></table></figure></li>
-<li><font face="黑体" ><strong>隔离性（isolation）</strong></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">通常来说，一个事物所作的修改在最终提交之前，对其他的事务是不可见的。</span><br></pre></td></tr></table></figure></li>
-<li><font face="黑体" ><strong>持久性（durability）</strong></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一旦事务提交，则其所作的修改就会永久的保存在数据库中。此时即使系统崩溃，修改的数据也不会丢失。持久性是个模糊的概念，实际持久性也分很多不同的级别。</span><br></pre></td></tr></table></figure>
+<li><font face="黑体"><strong>原子性（atomicity）</strong></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一个事物必须视作一个不可分割的工作单元，整个事务中的所有操作要么全部提交成功要么全部失败回滚。</span><br></pre></td></tr></table></figure></li>
+<li><font face="黑体"><strong>一致性（consistency）</strong></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">数据库总是从一个一致性状态转换到另一个一致性状态。中途语句执行失败，因为事务最终没有提交，所以事务中所作的修改也不会修改并保存到数据库中，确保了数据的一致性。</span><br></pre></td></tr></table></figure></li>
+<li><font face="黑体"><strong>隔离性（isolation）</strong></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">通常来说，一个事物所作的修改在最终提交之前，对其他的事务是不可见的。</span><br></pre></td></tr></table></figure></li>
+<li><font face="黑体"><strong>持久性（durability）</strong></font><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一旦事务提交，则其所作的修改就会永久的保存在数据库中。此时即使系统崩溃，修改的数据也不会丢失。持久性是个模糊的概念，实际持久性也分很多不同的级别。</span><br></pre></td></tr></table></figure>
 
 </li>
 </ul>
@@ -313,20 +313,20 @@
 
 <p>&emsp;&emsp;隔离性比想象中更为复杂，在SQL定义了四种隔离级别：</p>
 <ol>
-<li><font face="黑体" ><strong>READ UNCOMMITTED（未提交读）</strong></font><ul>
+<li><font face="黑体"><strong>READ UNCOMMITTED（未提交读）</strong></font><ul>
 <li>在该级别中，事务的修改，即使没有提交,对其他事务也是可见的。事务可以读取未提交的数据，这就是脏读（Drity Read）。从性能上来看缺乏其他级别的许多好处，除非有必要的理由，一般不会使用。</li>
 </ul>
 </li>
-<li><font face="黑体" ><strong>READ COMMITTED（提交读）</strong></font><ul>
+<li><font face="黑体"><strong>READ COMMITTED（提交读）</strong></font><ul>
 <li>大多数数据库默认的都是该级别，但MySQL不是。一个事务从开始直到提交之前，所作的任何修改对其他事务都是不可见的。这个级别有时也叫做不可重复读，因为两次执行同样的查询，可能会查询到不一样的结果。</li>
 </ul>
 </li>
-<li><font face="黑体" ><strong>REPEATABLE READ（可重复读）</strong></font><ul>
+<li><font face="黑体"><strong>REPEATABLE READ（可重复读）</strong></font><ul>
 <li>此级别解决了脏读的问题。该级别保证了同一个事务中多次读取同样记录的结果是一致的。但是理论上，可重复读还是无法解决另外一个幻读（Phantom Read）的问题。所谓幻读指的是当某个事务在读取某个范围内的值时，另外一个事物又在该范围内修改了记录。这是读取的还是之前查询的记录，会出现幻行（Phantom Row）。InnoDB和XtraDB存储引擎通过多版本并发控制（MVCC,Multiversion Concurrency Control）解决了这个问题。</li>
 <li>可重复读是MySQL的默认事务隔离级别。</li>
 </ul>
 </li>
-<li><font face="黑体" ><strong>SERIALIZABLE（可串行化）</strong></font><ul>
+<li><font face="黑体"><strong>SERIALIZABLE（可串行化）</strong></font><ul>
 <li>此级别是最高的隔离级别。它通过强制事务串行执行，避免了幻读的问题。简单来说，该级别会在读取的每一行数据上加锁，所以可能导致大量的超时和锁争用的的问题。实际应用中很少用到，除非非常需要确保数据的一致性并且接受没有并发的情况，才考虑该级别。</li>
 </ul>
 </li>
@@ -539,6 +539,15 @@
 
 <nav id="article-nav">
   
+    <a href="/2020/11/19/git%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          git的简单使用
+        
+      </div>
+    </a>
+  
   
     <a href="/2020/09/28/Spring%20Boot%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9FSpring%20Boot%E5%BA%94%E7%94%A8/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Spring Boot是什么？Spring Boot应用</div>
@@ -708,6 +717,10 @@
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">md</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
             
             <div class="clearfix"></div>
